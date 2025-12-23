@@ -1,5 +1,4 @@
-#ifndef SAFE_QUEUE_HPP
-#define SAFE_QUEUE_HPP
+#pragma once
 
 #include <chrono>
 #include <condition_variable>
@@ -23,7 +22,7 @@ class SafeQueue {
     std::optional<T> pop_for(std::chrono::milliseconds duration);
 
     // utility
-    void empty() const {
+    bool empty() const {
         std::lock_guard<std::mutex> lock(mutex_);
         return queue_.empty();
     }
@@ -46,9 +45,9 @@ class SafeQueue {
     }
 
     private:
-    mutable std::queue<T> queue_;
+    std::queue<T> queue_;
     std::mutex mutex_;
-    std::condition_variable cv_;
+    mutable std::condition_variable cv_;
     bool shutdown_ = false;
 };
 
@@ -65,7 +64,7 @@ void SafeQueue<T>::push(T item) {
 template<typename T>
 T SafeQueue<T>::pop() {
     std::unique_lock<std::mutex> lock(mutex_);
-    cv_.wait(lock, [] { 
+    cv_.wait(lock, [this] { 
         return !queue_.empty() || shutdown_; 
     });
 
@@ -99,12 +98,10 @@ std::optional<T> SafeQueue<T>::pop_for(std::chrono::milliseconds duration) {
     }
 
     if(queue_.empty()) {
-        return std::nullopt;
+        throw std::runtime_error("Queue is shutdown")
     }
 
     T item = std::move(queue_.front());
     queue_.pop();
     return item;
 }
-
-#endif

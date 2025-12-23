@@ -1,3 +1,7 @@
+#pragma once
+
+#include <mutex>
+#include <optional>
 #include <unordered_map>
 #include <shared_mutex>
 
@@ -15,6 +19,11 @@ class SafeMap {
         return std::nullopt;
     }
 
+    bool contains(const K& key) const {
+        std::shared_lock<std::shared_mutex> lock(mutex_);
+        return map_.find(key) != map_.end();
+    }
+
     void put(const K& key, const V& value) {
         std::unique_lock<std::shared_mutex> lock(mutex_);
         map_[key] = value;
@@ -27,5 +36,5 @@ class SafeMap {
 
     private:
     std::unordered_map<K, V> map_;
-    std::shared_mutex 
+    mutable std::shared_mutex mutex_;
 };
