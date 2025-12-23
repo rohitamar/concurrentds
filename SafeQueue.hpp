@@ -10,7 +10,7 @@
 template<typename T>
 class SafeQueue {
     public:
-    SafeQueue() { }
+    SafeQueue() = default;
 
     // blocking 
     void push(T item);
@@ -46,7 +46,7 @@ class SafeQueue {
     }
 
     private:
-    std::queue<T> queue_;
+    mutable std::queue<T> queue_;
     std::mutex mutex_;
     std::condition_variable cv_;
     bool shutdown_ = false;
