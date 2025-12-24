@@ -25,7 +25,7 @@ int main() {
 Python:
 ```python
 import threading 
-import pyth.SafeQueue as SafeQueue
+from python.SafeQueue import SafeQueue
 
 def worker(q):
     for i in range(10):
