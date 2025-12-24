@@ -98,7 +98,7 @@ std::optional<T> SafeQueue<T>::pop_for(std::chrono::milliseconds duration) {
     }
 
     if(queue_.empty()) {
-        throw std::runtime_error("Queue is shutdown")
+        throw std::runtime_error("Queue is shutdown");
     }
 
     T item = std::move(queue_.front());
