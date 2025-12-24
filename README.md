@@ -2,7 +2,7 @@
 Concurrent data structures
 
 Example:
-```
+```c++
 void worker(SafeQueue<int>& q) {
     for(int i = 0; i < 10; i++) {
         q.push(i);
